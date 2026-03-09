@@ -11,6 +11,9 @@ public:
     // Constructor
     Character(std::string charName, int startingHealth);
 
+    //Destructor
+    ~Character();
+
     // Methods
     void takeDamage(int damage);
     void printStatus();
