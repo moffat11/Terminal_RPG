@@ -1,18 +1,18 @@
 #include <iostream>
 #include <memory> //For smart pointers
-#include "Character.h" //Import new class
+#include "Player.h" // Include our new Player class!
 
 int main() {
-    std::cout << "Initializing Game Engine... " << std::endl;
+    std::cout << "--- BATTLE START ---" << std::endl;
 
-    // Create a Character dynamically on the Heap using a Smart Pointer
-    // std:::make_unique guarantees this memory will not leak
-    std::unique_ptr<Character> playerOne = std::make_unique<Character>("Supreme", 100);
+    //Spawn a PLAYER dynamically on the Heap
+    std::unique_ptr<Player> hero = std::make_unique<Player>("MW", 100, 50);
 
-    // Because plaayerOne is a pointer, we use -> to call its methods, not a dot
-    playerOne->printStatus();
-    playerOne->takeDamage(25);
-    playerOne->printStatus();
+    hero->printStatus(); // Inherited from Character
+    hero->takeDamage(30); // Inherited from Character
+    hero-> heal(); // Specific to Player
+    hero->printStatus(); // Notice the health went back up
 
-    std::cout << "Shutting downengine ..." << std::endl;
+    std::cout << "--- Battle END ---" << std::endl;
+    return 0;
 }

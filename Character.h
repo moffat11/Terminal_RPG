@@ -3,7 +3,10 @@
 
 //Just the blueeprint, no actual code goes here
 class Character {
-private:
+//With the name and health being private means that only the Character
+//class can see them -even its own children (Player) gets locked out.
+//Solution: change them to protected.
+protected:
     std::string name;
     int health;
 
@@ -12,7 +15,9 @@ public:
     Character(std::string charName, int startingHealth);
 
     //Destructor
-    ~Character();
+    // Adding a 'virtual' here which is critical for memory safety in
+    //inheritance
+    virtual ~Character();
 
     // Methods
     void takeDamage(int damage);
