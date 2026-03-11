@@ -24,3 +24,7 @@ void Character::printStatus() {
 Character::~Character() {
     std::cout << "[MEMORY CLEARED] " << name << " has been safely removed from RAM!" << std::endl;
 }
+
+bool Character::isAlive() {
+    return health > 0;
+}

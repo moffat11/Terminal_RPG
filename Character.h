@@ -24,5 +24,6 @@ public:
     // Will be doing this by adding the virtual keyword
     virtual void takeDamage(int damage);
     void printStatus();
+    bool isAlive();
 
 };
