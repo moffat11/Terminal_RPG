@@ -19,3 +19,11 @@ void Player::heal() {
         std::cout << name << " does not have enough mana to heal!" << std::endl;
     }
 }
+
+// The Player's armour will cut all incoming damage directly in half
+void Player::takeDamage(int damage) {
+    int actualDamage = damage / 2;
+    health -= actualDamage;
+    if  (health < 0) health = 0;
+    std::cout << "[ARMOUR] " << name << "\'s armour deflected half the blow! Only took " << actualDamage << " damage. Health is now  " << health << "." << std::endl;
+}

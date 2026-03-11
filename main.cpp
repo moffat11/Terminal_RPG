@@ -5,23 +5,20 @@
 #include "Enemy.h"
 
 int main() {
-    std::cout << "--- BATTLE START ---" << std::endl;
+    std::cout << "--- DRAGON ATTACK ---" << std::endl;
+    // Hitting both the player and goblin at the same time
 
-    //Spawn a PLAYER dynamically on the Heap
     std::unique_ptr<Player> hero = std::make_unique<Player>("MW", 100, 50);
     std::unique_ptr<Enemy> goblin = std::make_unique<Enemy>("G.Goblin", 100);
 
-    std::cout << "\n*** Round 1 ***" << std::endl;
-    goblin->decideAction(); // IDLE and health is at 100
+    std::cout <<"\n*** A Different teamplayer fires for 40 damage! ***" << std::endl;
 
-    std::cout << "\n*** MW attacks G.Goblin! ***" << std::endl;
+    //G.Goblin takes the hit (Uses the base Character logic)
     goblin->takeDamage(40);
-    goblin->decideAction(); //Health drops below 100 and should be AGGRESSIVE
 
-    std::cout << "\n*** MW hits a critical strike! ***" << std::endl;
-    goblin->takeDamage(35);
-    goblin->decideAction(); // FLEEING as health is less than < 30
+    //MWtakes the hit (Uses custom Player override logic)
+    hero->takeDamage(40);
 
-    std::cout << "--- BATTLE END ---" << std::endl;
+    std::cout << "\n--- BATTLE END ---" << std::endl;
     return 0;
 }

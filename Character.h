@@ -20,7 +20,9 @@ public:
     virtual ~Character();
 
     // Methods
-    void takeDamage(int damage);
+    // To give the child classes permission to rewrite the takeDamage()
+    // Will be doing this by adding the virtual keyword
+    virtual void takeDamage(int damage);
     void printStatus();
 
 };
