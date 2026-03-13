@@ -30,6 +30,12 @@ int main() {
 
     int round = 1;
 
+    // The Player has some starting gear
+    hero->pickUpItem("Health Potion");
+    hero->pickUpItem("Health Potion");
+    hero->pickUpItem("Rusty Key");
+
+
     //THE GAME LOOP: First check if both characters are still alive and keep going till they are dead.
     while (hero->isAlive() && goblin->isAlive()){
         std::cout << "\n====== ROUND " << round << " ======" << std::endl;
@@ -37,7 +43,8 @@ int main() {
         goblin->printStatus();
 
         // --- 1. PLAYER TURN ---
-        std::cout << "\nChoose your action: [1] Attack  [2] Heal -> ";
+        // Include the option of showing the backpack every round
+        std::cout << "\nChoose your action: [1] Attack  [2] Heal [3] Use Potion -> ";
         int choice;
         std::cin >> choice; // The engine pauses her waiting for your keyboard
         
@@ -58,6 +65,10 @@ int main() {
         }
         else if (choice == 2) {
             hero->heal();
+        }
+        // New Potion Logic
+        else if (choice == 3) {
+            hero->usePotion();
         }
         else {
             std::cout << "\nInvalid choice! You trip and lose your turn." << std::endl;

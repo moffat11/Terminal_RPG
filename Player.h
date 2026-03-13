@@ -1,11 +1,15 @@
 // Player is an extension of Character
 #pragma once
 #include "Character.h"
+//The dynamic array library
+#include <vector>
 
 // The ": public Character" tells C++ to inherit everything from Character
 class Player : public Character {
 private:
     int mana; //Only the Player has mana
+    //The player's dynamic backpack
+    std::vector<std::string> inventory;
 
 public:
     // The Player constructor
@@ -15,4 +19,9 @@ public:
     void takeDamage(int damage) override;
     // Player-specific method
     void heal();
+
+    // Inventory Methods
+    void pickUpItem(std::string itemName);
+    void showInventory();
+    void usePotion();
 };
