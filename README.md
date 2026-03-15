@@ -7,6 +7,7 @@ A lightweight, text-based role-playing game engineered from scratch in C++ to so
 * **Polymorphic Combat System:** Employs virtual functions and class inheritance (Character -> Player / Enemy) to handle custom damage mitigation and armor logic dynamically.
 * **Algorithmic Enemy AI:** Features a Finite State Machine (FSM) where enemies dynamically shift states (Idle, Aggressive, Fleeing) based on real-time health evaluations.
 * **Unpredictable RNG Math:** Replaces legacy rand() with the C++ <random> library (Mersenne Twister std::mt19937) to calculate dynamic damage ranges and critical strike multipliers.
+* **State Progression & Loot Tables:** Features a mathematics-driven XP leveling system and percentage-based loot tables tied directly to the enemy's lifecycle.
 
 ## Tech Stack
 * **Language:** C++
