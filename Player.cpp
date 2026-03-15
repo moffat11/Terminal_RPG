@@ -71,7 +71,7 @@ void Player::usePotion() {
         if (health > 100) {
             health = 100;
         }
-        
+
         std::cout << "\n[ACTION] You drank a Health Potion! Recovered 40 HP. Health is now " << health << "." << std::endl;
 
         // Erase ONLY that specific potion from the vector
@@ -80,4 +80,18 @@ void Player::usePotion() {
     else {
         std::cout << "\n[ACTION] You rummage through your bag, but you don't have any Health Potions left!" << std::endl;
     }
+}
+void Player::equip(std::unique_ptr<Weapon> newWeapon) {
+    //Using std::move to take ownership of the memory address
+    equippedWeapon = std::move(newWeapon);
+
+    std::cout << "[SYSTEM] " << name << " equipped the " << equippedWeapon->getName() << " (+ " << equippedWeapon->getDamageBonus() << " Damage)!" << std::endl;
+}
+
+int Player::getTotalDamageBonus() {
+    // Always check for nullptr before reading a pointer
+    if (equippedWeapon != nullptr) {
+        return equippedWeapon->getDamageBonus();
+    }
+    return 0;
 }

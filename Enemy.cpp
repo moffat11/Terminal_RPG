@@ -35,3 +35,18 @@ void Enemy::decideAction() {
             break;
     }
 }
+// --- LOOT SYSTEM ---
+std::string Enemy::getLootDrop(int rngRoll) {
+    // 20% chance for a rare drop
+    if (rngRoll >= 80){
+        return "Iron Sword";
+    }
+    // 40% chance for a consumable
+    else if (rngRoll >= 40) {
+        return "Health Potion";
+    }
+    // 40% chance for nothing
+    else {
+        return "Nothing";
+    }
+}

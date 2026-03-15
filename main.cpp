@@ -14,6 +14,10 @@ int main() {
     std::unique_ptr<Player> hero = std::make_unique<Player>("MW", 100, 50);
     std::unique_ptr<Enemy> goblin = std::make_unique<Enemy>("G.Goblin", 100);
 
+    // Spawn a legendary weapon and transfer ownership to the Player
+    std::unique_ptr<Weapon> legendarySword = std::make_unique<Weapon>("MK", 25);
+    hero->equip(std::move(legendarySword));
+
     // --- Random Number Generator ---
     // Obtains a random seed from the Mac's hardware
     std::random_device rd;
@@ -49,8 +53,8 @@ int main() {
         std::cin >> choice; // The engine pauses her waiting for your keyboard
         
         if (choice == 1) {
-            //Roll for base damage
-            int damageDealt = playerDmgRange(gen);
+            //Roll for base damage + the weapon's damage bonus
+            int damageDealt = playerDmgRange(gen) + hero->getTotalDamageBonus();
 
             // Roll for Critical Strike (15% Chance)
             if (critChance(gen) <= 15){
@@ -62,6 +66,24 @@ int main() {
                 std::cout << "\n*** You swing your sword! ***" << std::endl;
             }
             goblin->takeDamage(damageDealt);
+
+            // LOOT DROP LOGIC
+            if (!goblin->isAlive()) {
+                std::cout << "\n*** The " << goblin->getName() << " collapses! ***" << std::endl;
+
+                // Roll a d100 for the loot table
+                std::uniform_int_distribution<> lootRoll(1, 100);
+                std::string droppedItem = goblin->getLootDrop(lootRoll(gen));
+
+                // If it dropped something, put it in the Player's vector inventory
+                if (droppedItem != "Nothing") {
+                    std::cout << "[SYSTEM] The enemy dropped some loot!" <<std::endl;
+                    hero->pickUpItem(droppedItem);
+                }
+                else {
+                    std::cout << "[SYSTEM] You search the enemy, but its pockets are empty." << std::endl;
+                }
+            }
         }
         else if (choice == 2) {
             hero->heal();

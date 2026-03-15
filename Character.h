@@ -19,6 +19,9 @@ public:
     //inheritance
     virtual ~Character();
 
+    // The getter function
+    std::string getName();
+
     // Methods
     // To give the child classes permission to rewrite the takeDamage()
     // Will be doing this by adding the virtual keyword

@@ -20,4 +20,7 @@ public:
 
     // The AI Logic method
     void decideAction();
+
+    // Loot calculator
+    std::string getLootDrop(int rngRoll);
 };

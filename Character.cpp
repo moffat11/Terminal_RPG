@@ -8,6 +8,10 @@ Character::Character(std::string charName, int startingHealth) {
     std::cout << name << " has entered the battle!" << std::endl;
 }
 
+std::string Character::getName() {
+    return name;
+}
+
 //Damage logic
 void Character::takeDamage(int damage) {
     health -= damage;
