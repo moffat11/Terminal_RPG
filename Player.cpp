@@ -8,6 +8,10 @@
 Player::Player(std::string charName, int startingHealth, int startingMana)
     : Character (charName, startingHealth) {
         mana = startingMana;
+        // Starting level
+        level = 1;
+        currentXP = 0;
+        xpToNextLevel = 100;
     }
 
 void Player::heal() {
@@ -89,9 +93,82 @@ void Player::equip(std::unique_ptr<Weapon> newWeapon) {
 }
 
 int Player::getTotalDamageBonus() {
-    // Always check for nullptr before reading a pointer
+    // Check for nullptr before reading a pointer
     if (equippedWeapon != nullptr) {
         return equippedWeapon->getDamageBonus();
     }
     return 0;
+}
+
+// --- PROGRESSION LOGIC ---
+void Player::gainXP(int amount) {
+    currentXP += amount;
+    std::cout << "[SYSTEM] " << name << " gained " << amount << " XP!" << std::endl;
+
+    // Check if we crossed the threshold
+    if (currentXP >= xpToNextLevel) {
+        levelUp();
+    }
+}
+
+void Player::levelUp() {
+    level++;
+    // Keep any rollover XP
+    currentXP -= xpToNextLevel;
+
+    // Make the next level harder to reach
+    xpToNextLevel = static_cast<int>(xpToNextLevel * 1.5);
+
+    // Stat boosts
+    health += 20;
+    mana += 10;
+
+    std::cout << "\n***************************************" << std::endl;
+    std::cout << "*** LEVEL UP! " << name << " is now Level " << "! ***" << std::endl;
+    std::cout << "*** Health +20 | Mana +10.            ***" << std::endl;
+    std::cout << "***************************************\n" << std::endl;
+}
+
+// --- DATA PERSISTENCE ---
+void Player::saveGame() {
+    // std::ofstream creates and writes to a file
+    std::ofstream outFile("saveData.txt");
+
+    if (outFile.is_open()) {
+        outFile << level << "\n";
+        outFile << health << "\n";
+        outFile << currentXP << "\n";
+        // Always close the file to prevent memory corruption
+        outFile.close();
+
+        std::cout << "\n[SYSTEM] Game saved successfully to saveData.txt!" << std::endl;
+    }
+    else {
+        std::cout << "\n[ERROR] Could not open save file." << std::endl;
+    }
+}
+
+bool Player::loadGame() {
+    // std::ifstream reads from a file
+    std::ifstream inFile("saveData.txt");
+
+    if (inFile.is_open()) {
+        inFile >> level;
+        inFile >> health;
+        inFile >> currentXP;
+
+        // Recalculate the XP needed for the loaded level
+        xpToNextLevel = 100;
+        for(int i = 1; i < level; i++) {
+            xpToNextLevel = static_cast<int>(xpToNextLevel * 1.5);
+        }
+
+        inFile.close();
+        std::cout << "[SYSTEM] Welcome back, " << name << ". Save file loaded!" << std::endl;
+        std::cout << "-> Level " << level << " | HP: " << health << " | XP:" << currentXP << "\n" << std::endl;
+        return true;
+    }
+
+    std::cout << "[SYSTEM] No previous save file found. Starting a new journey...\n" << std::endl;
+    return false;
 }

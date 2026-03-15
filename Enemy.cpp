@@ -50,3 +50,8 @@ std::string Enemy::getLootDrop(int rngRoll) {
         return "Nothing";
     }
 }
+
+int Enemy::getXPReward() {
+    // Every Enemy is worth 50XP
+    return 50; 
+}

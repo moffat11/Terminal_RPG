@@ -18,6 +18,9 @@ int main() {
     std::unique_ptr<Weapon> legendarySword = std::make_unique<Weapon>("MK", 25);
     hero->equip(std::move(legendarySword));
 
+    // Check for a save file immediately
+    hero->loadGame();
+
     // --- Random Number Generator ---
     // Obtains a random seed from the Mac's hardware
     std::random_device rd;
@@ -48,7 +51,7 @@ int main() {
 
         // --- 1. PLAYER TURN ---
         // Include the option of showing the backpack every round
-        std::cout << "\nChoose your action: [1] Attack  [2] Heal [3] Use Potion -> ";
+        std::cout << "\nChoose your action: [1] Attack  [2] Heal [3] Use Potion [4] Save Game -> ";
         int choice;
         std::cin >> choice; // The engine pauses her waiting for your keyboard
         
@@ -71,6 +74,9 @@ int main() {
             if (!goblin->isAlive()) {
                 std::cout << "\n*** The " << goblin->getName() << " collapses! ***" << std::endl;
 
+                // Give the Player the XP
+                hero->gainXP(goblin->getXPReward());
+
                 // Roll a d100 for the loot table
                 std::uniform_int_distribution<> lootRoll(1, 100);
                 std::string droppedItem = goblin->getLootDrop(lootRoll(gen));
@@ -91,6 +97,9 @@ int main() {
         // New Potion Logic
         else if (choice == 3) {
             hero->usePotion();
+        }
+        else if (choice == 4) {
+            hero->saveGame();
         }
         else {
             std::cout << "\nInvalid choice! You trip and lose your turn." << std::endl;

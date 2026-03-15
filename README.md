@@ -8,6 +8,7 @@ A lightweight, text-based role-playing game engineered from scratch in C++ to so
 * **Algorithmic Enemy AI:** Features a Finite State Machine (FSM) where enemies dynamically shift states (Idle, Aggressive, Fleeing) based on real-time health evaluations.
 * **Unpredictable RNG Math:** Replaces legacy rand() with the C++ <random> library (Mersenne Twister std::mt19937) to calculate dynamic damage ranges and critical strike multipliers.
 * **State Progression & Loot Tables:** Features a mathematics-driven XP leveling system and percentage-based loot tables tied directly to the enemy's lifecycle.
+* **Data Persistence (File I/O):** Utilizes the C++ `<fstream>` library to construct a robust save/load architecture, successfully serializing dynamic player states to physical disk space and completely reconstructing them upon engine boot.
 
 ## Tech Stack
 * **Language:** C++

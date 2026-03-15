@@ -23,4 +23,7 @@ public:
 
     // Loot calculator
     std::string getLootDrop(int rngRoll);
+
+    // To make sure the Enemy is worth something when they die
+    int getXPReward();
 };
