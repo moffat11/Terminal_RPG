@@ -17,7 +17,12 @@ Player::Player(std::string charName, int startingHealth, int startingMana)
 void Player::heal() {
     if (mana >= 10) {
         // We have access to 'health' because it is 'protected' in Character
-        health += 20;
+        if ((health <= 80)) {
+            health += 20;
+        }
+        else {
+            health = 100;
+        }
         mana -= 10;
         std::cout << name << " casts a healing spell! Recovered 20 HP. Mana left: " << mana << std::endl;
     }
@@ -138,10 +143,17 @@ void Player::saveGame() {
         outFile << level << "\n";
         outFile << health << "\n";
         outFile << currentXP << "\n";
+
+        // Save the Inventory
+        // Tells the file how many items we have
+        outFile << inventory.size() << "\n";
+        for (size_t i = 0; i < inventory.size(); i++) {
+            outFile << inventory[i] << "\n";
+        }
         // Always close the file to prevent memory corruption
         outFile.close();
 
-        std::cout << "\n[SYSTEM] Game saved successfully to saveData.txt!" << std::endl;
+        std::cout << "\n[SYSTEM] Game and Inventory saved successfully to saveData.txt!" << std::endl;
     }
     else {
         std::cout << "\n[ERROR] Could not open save file." << std::endl;
@@ -161,6 +173,19 @@ bool Player::loadGame() {
         xpToNextLevel = 100;
         for(int i = 1; i < level; i++) {
             xpToNextLevel = static_cast<int>(xpToNextLevel * 1.5);
+        }
+
+        // Load the Inventory
+        int invSize;
+        inFile >> invSize;
+
+        // Wipe the default starter items out of the RAM
+        inventory.clear();
+
+        for (int i = 0; i < invSize; i++) {
+            std::string itemName;
+            std::getline(inFile >> std::ws, itemName);
+            inventory.push_back(itemName);
         }
 
         inFile.close();

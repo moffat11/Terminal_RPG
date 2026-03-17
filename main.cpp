@@ -19,7 +19,13 @@ int main() {
     hero->equip(std::move(legendarySword));
 
     // Check for a save file immediately
-    hero->loadGame();
+    // If it returns FALSE (no save exists), give starter loot!
+    if (!hero->loadGame()) {
+        // The Player has some starting gear
+    hero->pickUpItem("Health Potion");
+    hero->pickUpItem("Health Potion");
+    hero->pickUpItem("Rusty Key");
+    }
 
     // --- Random Number Generator ---
     // Obtains a random seed from the Mac's hardware
@@ -36,11 +42,6 @@ int main() {
     std::uniform_int_distribution<> critChance(1, 100);
 
     int round = 1;
-
-    // The Player has some starting gear
-    hero->pickUpItem("Health Potion");
-    hero->pickUpItem("Health Potion");
-    hero->pickUpItem("Rusty Key");
 
 
     //THE GAME LOOP: First check if both characters are still alive and keep going till they are dead.
