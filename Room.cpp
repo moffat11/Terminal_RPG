@@ -54,3 +54,6 @@ Room* Room::getEast() {
 Room* Room::getWest() {
     return west;
 }
+Room::~Room() {
+    std::cout << "[MEMORY] Room destroyed. Cleaning up floor tiles..." << std::endl;
+}

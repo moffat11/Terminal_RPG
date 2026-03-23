@@ -37,4 +37,5 @@ public:
     void addEnemy(std::unique_ptr<Enemy> newEnemy);
     // Returns a raw pointer for the engine to look at
     Enemy* getEnemy();
+    ~Room();
 };

@@ -16,8 +16,9 @@ public:
 
     //Destructor
     // Adding a 'virtual' here which is critical for memory safety in
-    //inheritance
-    virtual ~Character();
+    //inheritance (ensures it clears the entire chain of children)
+    // The '= default' tells C++ to use the standard cleanup logic
+    virtual ~Character() = default;
 
     // The getter function
     std::string getName();
