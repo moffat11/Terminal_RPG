@@ -1,0 +1,3 @@
+Entrance|A cold, damp stone room. |North:Hallway
+Hallway|Torches flicker on the walls. |South:Entrance,East:Armory
+Armory|Old rusted weapons line the walls. |West:Hallway

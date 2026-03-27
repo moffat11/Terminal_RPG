@@ -5,16 +5,14 @@
 #include <memory>
 // For the enemy blueprint
 #include "Enemy.h"
+#include <unordered_map>
 
 class Room {
 private:
     std::string description;
 
-    // Raw observing pointers for navigation
-    Room* north;
-    Room* south;
-    Room* east;
-    Room* west;
+    // A dictionary linking directions ("North") to Room pointers
+    std::unordered_map<std::string, Room*> exits;
 
     // The Room OWNS whatever enemy is in it
     std::unique_ptr<Enemy> residentEnemy;
@@ -22,20 +20,17 @@ private:
 public:
     Room(std::string desc);
 
-    // Linking this room to others
-    void setExits(Room* n, Room* s, Room* e, Room* w);
+    // The dynamic exit functions
+    void setExit(std::string direction, Room* target);
+    Room* getExit(std::string direction);
 
     void printDescription();
-
-    // Getters so the Player knows where they can walk
-    Room* getNorth();
-    Room* getSouth();
-    Room* getEast();
-    Room* getWest();
 
     // Enemy Management methods
     void addEnemy(std::unique_ptr<Enemy> newEnemy);
     // Returns a raw pointer for the engine to look at
     Enemy* getEnemy();
     ~Room();
+    // UI Polish
+    std::string getAvailableExits();
 };

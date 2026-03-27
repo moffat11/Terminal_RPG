@@ -8,7 +8,13 @@
 #include <random>
 // Graph architecture
 #include "Room.h"
-// Going rewrite the main.cpp file and do the game loop
+// For reading and writing files
+#include <fstream>
+#include <string>
+// The dictionary to hold our dynamic rooms
+#include <unordered_map>
+#include <sstream>
+
 
 int main() {
     // --- Random Number Generator ---
@@ -31,6 +37,63 @@ int main() {
     std::cout << "     WELCOME TO THE DUNGEON" << std::endl;
     std::cout << "==============================\n" << std::endl;
 
+    // ---The Two-Pass Map Loader ---
+    std::cout << "\n[SYSTEM] Booting Map Loader..." << std::endl;
+
+    std::unordered_map<std::string, std::unique_ptr<Room>> dungeonMap;
+    std::unordered_map<std::string, std::string> rawExitData;
+
+    std::ifstream mapFile("map.txt");
+
+    if (!mapFile.is_open()) {
+        std::cerr << "[CRITICAL ERROR] Could not locate map.txt!" << std::endl;
+    }
+    else {
+        std::string line;
+
+        // Pass 1: Spawn the rooms
+        while (std::getline(mapFile, line)) {
+            size_t firstPipe = line.find('|');
+            size_t secondPipe = line.find('|', firstPipe + 1);
+
+            if (firstPipe != std::string::npos && secondPipe != std::string::npos) {
+                // Slice to three parts
+                std::string roomName = line.substr(0, firstPipe);
+                std::string roomDesc = line.substr(firstPipe + 1, secondPipe - firstPipe - 1);
+                std::string exits = line.substr(secondPipe + 1);
+
+                // Spawn the room
+                dungeonMap[roomName] = std::make_unique<Room>(roomDesc);
+
+                // Save the exit text in the notepd for Pass 2
+                rawExitData[roomName] = exits;
+            }
+        }
+        mapFile.close();
+        // Pass 2: Weave the graph
+        for (const auto& pair : rawExitData) {
+            std::string currentRoomName = pair.first;
+            std::string allExitsString = pair.second;
+
+            std::stringstream ss(allExitsString);
+            std::string singleExit;
+
+            // Chop the string by commas ("South:Entrance" then "East:armory")
+            while (std::getline(ss, singleExit, ',')) {
+                size_t colonPos = singleExit.find(':');
+                if (colonPos != std::string::npos) {
+                    std::string direction = singleExit.substr(0, colonPos);
+                    std::string targetName = singleExit.substr(colonPos + 1);
+
+                    // If the target room actually exists in our dungeon, link the pointer
+                    if (dungeonMap.count(targetName)) {
+                        dungeonMap[currentRoomName]->setExit(direction, dungeonMap[targetName].get());
+                    }
+                }
+            }
+        }
+        std::cout << "[SYSTEM] Map loading and graph weaving complete. Total Rooms: " << dungeonMap.size() << "\n" << std::endl;
+    }
     // --- THE MASTER ENGINE LOOP ---
     while (engineRunning){
 
@@ -51,57 +114,32 @@ int main() {
 
         // Instantiating three rooms and linking them together
         // ---MAP GENERATION ---
-        // 1. The Engine OWNS the memory
-        std::unique_ptr<Room> entrance = std::make_unique<Room>("Dungeon Entrance: A cold damp stone room. The heavy iron door behind you is sealed shut.");
-        std::unique_ptr<Room> hallway = std::make_unique<Room>("Dark Hallway: Torches flicker on the walls. You can hear a goblin grunting to the North.");
-        std::unique_ptr<Room> armory = std::make_unique<Room>("Armory: Old rusted weapons line the walls. It smells like oil and iron.");
-
-        // 2. The Rooms OBSERVE each other using .get()
-        // Order: North, South, East, West
-        entrance->setExits(hallway.get(), nullptr, nullptr, nullptr);
-        hallway->setExits(nullptr, entrance.get(), armory.get(), nullptr);
-        armory->setExits(nullptr, nullptr, nullptr, hallway.get());
 
         // Spawn the Goblin and lock him in the Hallway
         std::unique_ptr<Enemy> hallwayGoblin = std::make_unique<Enemy>("G.Goblin", 100);
-        hallway->addEnemy(std::move(hallwayGoblin));
+        //hallway->addEnemy(std::move(hallwayGoblin));
 
         // 3. Track where the Player is standing (Raw Pointer)
-        Room* currentRoom = entrance.get();
+        Room* currentRoom = dungeonMap["Entrance"].get();
 
         // --- NAVIGATION PHASE ---
         bool exploring = true;
         while (exploring) {
             currentRoom->printDescription();
+            std::cout << "\n--- LOCATION ---" << std::endl;
 
-            std::cout << "\nWhich way do you want to go? (n/s/e/w) or (c) to enter Combat -> ";
-            char move;
-            std::cin >> move;
+            // Print the available doors
+            std::cout << "[ EXITS ]: " << currentRoom->getAvailableExits() << std::endl;
 
-            if (move == 'n' && currentRoom->getNorth() != nullptr) {
-                currentRoom = currentRoom->getNorth();
-                std::cout << "\n[SYSTEM] You walk North." << std::endl;
-            }
-            else if (move == 's' && currentRoom->getSouth() != nullptr) {
-                currentRoom = currentRoom->getSouth();
-                std::cout << "\n[SYSTEM] You walk South." << std::endl;
-            }
-            else if (move == 'e' && currentRoom->getEast() != nullptr) {
-                currentRoom = currentRoom->getEast();
-                std::cout << "\n[SYSTEM] You walk East." << std::endl;
-            }
-            else if (move == 'w' && currentRoom->getWest() != nullptr) {
-                currentRoom = currentRoom->getWest();
-                std::cout << "\n[SYSTEM] You walk West." << std::endl;
-            }
-            else if (move == 'c') {
-                if (currentRoom->getEnemy() != nullptr && currentRoom->getEnemy()->isAlive()) {
-                    std::cout << "\n[SYSTEM] You draw your weapon and charge the " << currentRoom->getEnemy()->getName() << "!" << std::endl;
-                    exploring = false;  
-                }
-                else {
-                    std::cout << "\n[SYSTEM] You swing your weapon at the air. There is nothing to fight here." << std::endl;
-                }
+            std::cout << "\nWhich way do you want to go? (North, South, East, West) -> ";
+            std::string command;;
+            std::cin >> command;
+
+            Room* nextRoom = currentRoom->getExit(command);
+
+            if (nextRoom != nullptr) {
+                currentRoom = nextRoom;
+                std::cout << "\nYou walk " << command << "..." << std::endl;
             }
             else {
                 std::cout << "\n[SYSTEM]. You bump into a solid stone wall. You can't go that way!" << std::endl;

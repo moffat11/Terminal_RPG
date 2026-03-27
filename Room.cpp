@@ -1,35 +1,16 @@
 #include "Room.h"
-
+// Constructor
 Room::Room(std::string desc) {
     description = desc;
-    north = nullptr;
-    south = nullptr;
-    east = nullptr;
-    west = nullptr;
-}
-
-void Room::setExits(Room* n, Room* s, Room* e, Room* w) {
-    north = n;
-    south = s;
-    east = e;
-    west = w;
 }
 
 void Room::printDescription() {
-    std::cout << "\n--- LOCATION ---" << std::endl;
     std::cout << description << std::endl;
 
     // Warning the Player
     if (residentEnemy != nullptr && residentEnemy->isAlive()) {
         std::cout << "\n[WARNING] A " << residentEnemy->getName() << " is blocking your path!" << std::endl;
     }
-
-    std::cout << "Exits: ";
-    if (north != nullptr) std::cout << "[North] ";
-    if (south != nullptr) std::cout << "[South] ";
-    if (east != nullptr) std::cout << "[East] ";
-    if (west != nullptr) std::cout << "[West] ";
-    std::cout << "\n----------------" << std::endl;
 }
 
 // --- ENEMY MANAGEMENT ---
@@ -42,18 +23,42 @@ Enemy* Room::getEnemy() {
     return residentEnemy.get();
 }
 
-Room* Room::getNorth() {
-    return north;
-}
-Room* Room::getSouth() {
-    return south;
-}
-Room* Room::getEast() {
-    return east;
-}
-Room* Room::getWest() {
-    return west;
-}
 Room::~Room() {
     std::cout << "[MEMORY] Room destroyed. Cleaning up floor tiles..." << std::endl;
+}
+
+// Adds a new door to the room
+void Room::setExit(std::string direction, Room * target) {
+    exits[direction] = target;
+}
+
+// Looks for a door. If it doesn't exist, it returns a null pointer safely.
+Room* Room::getExit(std::string direction) {
+    if (exits.count(direction)) {
+        return exits[direction];
+    }
+    return nullptr;
+}
+
+std::string Room::getAvailableExits() {
+    // if there are no doors (a trap room!), return a default message
+    if (exits.empty()) {
+        return "None. You are trapped!";
+    }
+
+    std::string exitList = "";
+
+    // Loop through the dictionary
+    // 'pair.first' is the direction string (e.g North, South, ...)
+    // 'pair.second' is the pointer (not needed here)
+    for (const auto& pair : exits) {
+        exitList += pair.first + ", ";
+    }
+
+    // The loop leaves a trailing comma and the space at the very end
+    //Chop off the last two characters to make it clean
+    exitList.pop_back();
+    exitList.pop_back();
+
+    return exitList;
 }
